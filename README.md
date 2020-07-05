@@ -34,12 +34,12 @@ $ git clone https://github.com/lbwtorino/Fine-Grained-Blockchain-Rewriting-in-Pe
 
 Once installed all the dependencies, to run and test ABET scheme, 
 ```sh
-$ python scheme.py ABET
+$ python main.py ABET
 ```
 
 You can also seperately run and test DPSS protocol, 
 ```sh
-$ python scheme.py DPSS
+$ python main.py DPSS
 ```
 
 ## Interaction with blockchain
@@ -54,7 +54,6 @@ $ pip install -r requirements.txt
 Start a blockchain node server,
 
 ```sh
-# Windows users can follow this: https://flask.palletsprojects.com/en/1.1.x/cli/#application-discovery
 $ export FLASK_APP=node_server.py
 $ flask run --port 8001
 ```
