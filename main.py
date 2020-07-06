@@ -86,7 +86,7 @@ def main():
 
         # shares_B is a size_A * size_B list, shares_B[i] has 5 numbers/points
         shares_B = share.get_GroupB_shares(reshare_A)
-        print("shares_B:")
+        print("shares_B:\n")
         print(shares_B)
 
         constant_prime, a1_prime, a2_prime = 0, groupObj.init(ZR, int(random.randrange(1000))), groupObj.init(ZR, int(random.randrange(1000)))
