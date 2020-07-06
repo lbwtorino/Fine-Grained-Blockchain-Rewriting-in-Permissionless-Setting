@@ -79,6 +79,22 @@ class SHARING(ABEnc):
         numerator.append(1)
         return {'numerator': numerator, 'denominator':denominator}
 
+    def update_polynomial(self, shares_Bi, c, a_1, a_2):
+        constant, a1, a2 = shares_Bi['constant'], shares_Bi['x_exp_1'], shares_Bi['x_exp_2']
+        constant_prime, a1_prime, a2_prime = constant+c, a1+a_1, a2+a_2
+        res = []
+        for i in range(self.size_B):
+            res.append(self.compute_polynomial(constant_prime, a1_prime, a2_prime, i+1))
+        return res
 
+    def update(self, B):
+        res = []
+        for i in range(self.size_B):
+            tmp = []
+            for j in range(5):
+                tmp.append(B[j][i])
+            res.append(self.recover_secret(tmp)['constant'])
+            # res.append(tmp)
+        return res
 
 

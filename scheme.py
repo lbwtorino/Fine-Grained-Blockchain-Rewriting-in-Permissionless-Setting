@@ -176,6 +176,7 @@ class SCHEME(ABEnc):
         # compute w_i
         w = util.getCoefficients(policy)  # Given a policy, returns a coefficient for every attribute
         pruned_list = util.prune(policy, ct['attri_list']) # determine whether a given set of attributes satisfies the policy
+        print(pruned_list)
         if (pruned_list == False):
             return group.init(GT,1)
         # compute B
