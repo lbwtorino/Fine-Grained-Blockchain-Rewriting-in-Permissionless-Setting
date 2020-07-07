@@ -1,5 +1,7 @@
 import datetime
 import json
+from hashlib import sha256
+
 
 import requests
 from flask import render_template, redirect, request
@@ -8,7 +10,7 @@ from app import app
 
 # The node with which our application interacts, there can be multiple
 # such nodes as well.
-CONNECTED_NODE_ADDRESS = "http://127.0.0.1:8001"
+CONNECTED_NODE_ADDRESS = "http://127.0.0.1:8000"
 
 posts = []
 
@@ -53,9 +55,11 @@ def submit_textarea():
     post_content = request.form["content"]
     author = request.form["author"]
 
+    tx_hash = sha256(str(post_content).encode()).hexdigest()
     post_object = {
         'author': author,
         'content': post_content,
+        'tx_hash': tx_hash
     }
 
     # Submit a transaction
