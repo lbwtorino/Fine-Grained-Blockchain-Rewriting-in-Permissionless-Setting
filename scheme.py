@@ -2,6 +2,7 @@ import charm.core.crypto.cryptobase
 from charm.toolbox.pairinggroup import *
 from charm.toolbox.secretutil import SecretUtil
 from charm.toolbox.ABEnc import *
+import time
 
 class SCHEME(ABEnc):
     def __init__(self, groupObj, verbose = False):
@@ -38,7 +39,6 @@ class SCHEME(ABEnc):
         h_1_alpha = h**(1/alpha)
         h_beta_alpha =  h**(beta/alpha)
         egg_theta_alpha = egg**(theta/alpha)
-
         # mpk
         mpk = {'g':g, 'u':u, 'v':v, 'w':w, 'h':h, 'egg':egg, 'vector_g_alpha': vector_g_alpha, 'vector_h_alpha': vector_h_alpha, 'g_beta': g_beta, 'h_1_alpha': h_1_alpha, 'h_beta_alpha': h_beta_alpha, 'egg_theta_alpha': egg_theta_alpha}
         # msk
@@ -48,11 +48,14 @@ class SCHEME(ABEnc):
 
 
     def keygen(self, mpk, msk, policy_str):
+        # print(time.time())
         # the secret alpha will be shared according to the policy	
         policy = util.createPolicy(policy_str)
         # retrieve the attributes that occur in a policy tree in order (left to right)
+        # print(time.time())
         a_list = util.getAttributeList(policy)
         # compute vector lambda
+        # print(time.time())
         shares = util.calculateSharesDict(msk['alpha'], policy)
         # compute K{}, [t_1,t_2,....t_n], [r_1,r_2, .....r_n] 
         SK1, SK2, SK3 = {}, {}, {}
@@ -72,7 +75,7 @@ class SCHEME(ABEnc):
             SK3[i] = mpk['h']**t_i
             t.append(t_i)
             r.append(r_i)
-        
+        # print(time.time())
         # sk_0
         sk_0 = {}
         sum_t, sum_r = sum(t), sum(r)
@@ -94,7 +97,7 @@ class SCHEME(ABEnc):
             I.append(tmp)
         vector_i *= mpk['g']
         sk_1 = mpk['g']**msk['theta'] * vector_i**sum_t * mpk['g']**(msk['beta']*sum_r)
-
+        # print(time.time())
         return {'Policy':policy_str, 'SK1':SK1, 'SK2':SK2, 'SK3':SK3, 'sk_0': sk_0, 'sk_1': sk_1}
 
     def helper_gen_ciphertext(self, mpk, msk, R, attri_list):
@@ -169,14 +172,14 @@ class SCHEME(ABEnc):
     def adapt(self, mpk, msk, sk, ct, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk):
         # step 1
         res = self.verify(mpk, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk)
-        print(res)
+        # print(res)
 
         # step 2
         policy = util.createPolicy(sk['Policy'])  # Convert a Boolean formula represented as a string into a policy represented like a tree
         # compute w_i
         w = util.getCoefficients(policy)  # Given a policy, returns a coefficient for every attribute
         pruned_list = util.prune(policy, ct['attri_list']) # determine whether a given set of attributes satisfies the policy
-        print(pruned_list)
+        # print(pruned_list)
         if (pruned_list == False):
             return group.init(GT,1)
         # compute B
@@ -217,6 +220,5 @@ class SCHEME(ABEnc):
 
         res_prime = self.verify(mpk, message_prime, p_prime, b, random_r_prime, C_prime, c_prime, epk_prime, sigma_prime, keypair_pk_prime)
         print(res_prime)
-
         # step 6
         return {'message_prime':message_prime, 'p_prime':p_prime, 'b':b, 'random_r_prime':random_r_prime, 'C_prime':C_prime, 'c_prime':c_prime, 'epk_prime': epk_prime, 'sigma_prime': sigma_prime}
