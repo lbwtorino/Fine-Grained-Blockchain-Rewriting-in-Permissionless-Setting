@@ -7,6 +7,7 @@ import requests
 from flask import render_template, redirect, request
 
 from app import app
+from merkle import hashfunc
 
 # The node with which our application interacts, there can be multiple
 # such nodes as well.
@@ -38,10 +39,9 @@ def fetch_posts():
 
 @app.route('/')
 def index():
-    fetch_posts()
+    # fetch_posts()
     return render_template('index.html',
-                           title='YourNet: Decentralized '
-                                 'content sharing',
+                           title='Decentralized nodes',
                            posts=posts,
                            node_address=CONNECTED_NODE_ADDRESS,
                            readable_time=timestamp_to_string)
@@ -55,10 +55,16 @@ def submit_textarea():
     post_content = request.form["content"]
     author = request.form["author"]
 
-    tx_hash = sha256(str(post_content).encode()).hexdigest()
+    # tx_hash = sha256(str(post_content).encode()).hexdigest()
+    to_modify_content = str(hashfunc(post_content))
+    # tx_hash = sha256(str(to_modify_content).encode()).hexdigest()
+    tx_hash = sha256(to_modify_content.encode()).hexdigest()
+    # print(hashlib.sha256(str(hash_text['b']).encode()).hexdigest())
+
     post_object = {
         'author': author,
         'content': post_content,
+        'to_modify': to_modify_content,
         'tx_hash': tx_hash
     }
 

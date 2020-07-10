@@ -4,17 +4,16 @@ import time
 
 from flask import Flask, request
 import requests
-from merklelib import MerkleTree, beautify, export
-from merkle import hashfunc, defaulthash
+
 
 class Block:
-    def __init__(self, index, transactions, timestamp, previous_hash, nonce=0):
+    def __init__(self, index, transactions, timestamp, previous_hash, tx_index, nonce=0):
         self.index = index
         self.transactions = transactions
         self.timestamp = timestamp
         self.previous_hash = previous_hash
         self.nonce = nonce
-        # self.tx_index = tx_index
+        self.tx_index = tx_index
 
     def compute_hash(self):
         """
@@ -27,7 +26,6 @@ class Block:
 class Blockchain:
     # difficulty of our PoW algorithm
     difficulty = 2
-    size = 1
 
     def __init__(self):
         self.unconfirmed_transactions = []
@@ -65,24 +63,17 @@ class Blockchain:
 
         block.hash = proof
         self.chain.append(block)
-        _transaction = []
-        transaction = []
-        _transaction.append(list(block.transactions))
-        transaction.append(_transaction)
-        write_content = {'index':block.index, 'transactions':self.unconfirmed_transactions, 'timestamp':block.timestamp, 'previous_hash':block.previous_hash, 'nonce': block.nonce, 'hash':block.hash}
+        test = {'index':block.index, 'transactions':block.transactions, 'timestamp':block.timestamp, 'previous_hash':block.previous_hash, 'nonce': block.nonce, 'hash':block.hash}
         # test_json = json.dumps(test)
         file_name = './block_data/block_' + str(block.index) + '.json'
         with open(file_name, 'w') as outfile:
-            json.dump(write_content, outfile)
-        data = []
-        # data.append(self.unconfirmed_transactions[0]['content'])
-        # data.append(hashfunc(self.unconfirmed_transactions[0]['content']))
-        data.append(self.unconfirmed_transactions[0]['to_modify'])
-        tree = MerkleTree(data, defaulthash)
-        path = './block_data/merkle_' + str(block.index)
-        # export(tree, filename=path)
+            json.dump(test, outfile)
         return True
 
+        new_block = Block(index=last_block.index + 1,
+                          transactions=self.unconfirmed_transactions,
+                          timestamp=time.time(),
+                          previous_hash=last_block.hash)
 
     @staticmethod
     def proof_of_work(block):
@@ -130,9 +121,6 @@ class Blockchain:
             block.hash, previous_hash = block_hash, block_hash
 
         return result
-    
-    # def hashfunc(self, value):
-    #     return hashlib.sha256(str(value).encode()).hexdigest()
 
     def mine(self):
         """
@@ -140,39 +128,19 @@ class Blockchain:
         transactions to the blockchain by adding them to the block
         and figuring out Proof Of Work.
         """
-
         if not self.unconfirmed_transactions:
             return False
 
         last_block = self.last_block
 
-        if Blockchain.size <= 2:
-            last_block.transactions.append(self.unconfirmed_transactions)
-            Blockchain.size += 1
-            test = {'index':last_block.index, 'transactions':last_block.transactions, 'timestamp':last_block.timestamp, 'previous_hash':last_block.previous_hash, 'nonce': last_block.nonce, 'hash':last_block.hash}
-            # test = {'index':last_block.transactions}
-            file_name = './block_data/block_' + str(last_block.index) + '.json'
-            with open(file_name, 'w') as outfile:
-                json.dump(test, outfile)
-            data = []
-            for i in last_block.transactions:
-                # data.append(i[0]['content'])
-                # data.append(hashfunc(i[0]['content']))
-                data.append(i[0]['to_modify'])
-            tree = MerkleTree(data, defaulthash)
-            path = './block_data/merkle_' + str(last_block.index)
-            # export(tree, filename=path)
-        else:
-            Blockchain.size = 1
-            new_block = Block(index=last_block.index + 1,
-                            transactions=[self.unconfirmed_transactions],
-                            timestamp=time.time(),
-                            previous_hash=last_block.hash)
-            
+        new_block = Block(index=last_block.index + 1,
+                          transactions=self.unconfirmed_transactions,
+                          timestamp=time.time(),
+                          previous_hash=last_block.hash)
+        
 
-            proof = self.proof_of_work(new_block)
-            self.add_block(new_block, proof)
-            Blockchain.size += 1
+        proof = self.proof_of_work(new_block)
+        self.add_block(new_block, proof)
 
         self.unconfirmed_transactions = []
 
@@ -194,7 +162,7 @@ peers = set()
 @app.route('/new_transaction', methods=['POST'])
 def new_transaction():
     tx_data = request.get_json()
-    required_fields = ["author", "content", "to_modify", "tx_hash"]
+    required_fields = ["author", "content", "tx_hash"]
 
     for field in required_fields:
         if not tx_data.get(field):
@@ -236,7 +204,6 @@ def mine_unconfirmed_transactions():
             # announce the recently mined block to the network
             announce_new_block(blockchain.last_block)
         return "Block #{} is mined.".format(blockchain.last_block.index)
-        # return "Block #{} is mined.".format(blockchain.last_block.index)
 
 
 # endpoint to add new peers to the network.
