@@ -2,9 +2,6 @@ import charm.core.crypto.cryptobase
 from charm.toolbox.pairinggroup import *
 from charm.toolbox.secretutil import SecretUtil
 from charm.toolbox.ABEnc import *
-# from charm.toolbox.pairinggroup import PairingGroup, GT
-# from kpabe import KPABE
-# from ibe import KPIBE
 from scheme import SCHEME
 from sharing import SHARING
 import argparse
@@ -45,7 +42,7 @@ def main():
         keypair_pk = hash_text['keypair_pk']
         verify_text = scheme.verify(mpk, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk)
 
-        adapt_text = scheme.adapt(mpk, msk, sk, C, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk)
+        adapt_text = scheme.adapt(mpk, msk, sk, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk)
 
     elif args.modules == 'DPSS':
         share = SHARING(groupObj)

@@ -4,7 +4,7 @@ from charm.toolbox.secretutil import SecretUtil
 from charm.toolbox.ABEnc import *
 import time
 
-class SCHEME(ABEnc):
+class CHAMELEON(ABEnc):
     def __init__(self, groupObj, verbose = False):
         ABEnc.__init__(self)
         global util, group
@@ -136,11 +136,28 @@ class SCHEME(ABEnc):
         # compute C{}
         return {'attri_list':attri_list, 'ct':ct, 'CT1':CT1, 'CT2':CT2, 'ct_0':ct_0, 'ct_1':ct_1} 
 
+    def generate_chameleon_hash(self, mpk, _message):
+        # step 1
+        print('test:', _message)
+        message = group.init(ZR, int(_message))
+        g = mpk['g']
+        random_r = group.random(ZR)
+        R = group.random(ZR)
+        # print('native R', R)
+        e = group.hash(str(R), ZR)
+        p_prime = g**e
+        b = g**message * p_prime**random_r
+        res = {}
+        res['message'] = message
+        res['b'] = b
+        return res
+
     def hash(self, mpk, msk, message, attri_list):
         # step 1
         g = mpk['g']
         random_r = group.random(ZR)
         R = group.random(ZR)
+        # print('native R', R)
         e = group.hash(str(R), ZR)
         p_prime = g**e
         b = g**message * p_prime**random_r
@@ -162,6 +179,8 @@ class SCHEME(ABEnc):
         g = mpk['g']
         g_message_p_prime_r = g**message * p_prime**random_r
         epk_pk = epk * keypair_pk**group.hash(str(epk)+str(c), ZR)
+        # print(b, g_message_p_prime_r)
+        # print(g**sigma, epk_pk)
         return (b == g_message_p_prime_r) and (g**sigma == epk_pk)
 
 
@@ -169,12 +188,14 @@ class SCHEME(ABEnc):
     def adapt(self, mpk, msk, sk, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk):
         # step 1
         res = self.verify(mpk, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk)
+        # print(res)
 
         # step 2
         policy = util.createPolicy(sk['Policy'])  # Convert a Boolean formula represented as a string into a policy represented like a tree
         # compute w_i
         w = util.getCoefficients(policy)  # Given a policy, returns a coefficient for every attribute
         pruned_list = util.prune(policy, C['attri_list']) # determine whether a given set of attributes satisfies the policy
+        # print(pruned_list)
         if (pruned_list == False):
             return group.init(GT,1)
         # compute B
@@ -195,6 +216,7 @@ class SCHEME(ABEnc):
         hashed_value = group.hash(input_for_hash, ZR)
         _R = int(C['ct']) ^ int(hashed_value)
         R = group.init(ZR, int(_R))
+        # print('decrypted R', R)
 
         # step 3
         e = group.hash(str(R), ZR)
