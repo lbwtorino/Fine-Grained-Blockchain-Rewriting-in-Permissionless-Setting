@@ -48,7 +48,6 @@ class SCHEME(ABEnc):
 
 
     def keygen(self, mpk, msk, policy_str):
-        # print(time.time())
         # the secret alpha will be shared according to the policy	
         policy = util.createPolicy(policy_str)
         # retrieve the attributes that occur in a policy tree in order (left to right)
@@ -97,7 +96,6 @@ class SCHEME(ABEnc):
             I.append(tmp)
         vector_i *= mpk['g']
         sk_1 = mpk['g']**msk['theta'] * vector_i**sum_t * mpk['g']**(msk['beta']*sum_r)
-        # print(time.time())
         return {'Policy':policy_str, 'SK1':SK1, 'SK2':SK2, 'SK3':SK3, 'sk_0': sk_0, 'sk_1': sk_1}
 
     def helper_gen_ciphertext(self, mpk, msk, R, attri_list):
@@ -156,7 +154,6 @@ class SCHEME(ABEnc):
         c = g**(keypair_sk + R) 
         sigma = esk + keypair_sk * group.hash((str(epk)+str(c)), ZR)
         print("b:", b, "\nmessage:", message)
-
         return {'message':message, 'p_prime':p_prime, 'b':b, 'random_r':random_r, 'C':C, 'c':c, 'epk':epk, 'sigma': sigma, 'keypair_pk':keypair_pk}
 
     def verify(self, mpk, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk):
