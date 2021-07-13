@@ -58,21 +58,21 @@ def submit_textarea():
     # tx_hash = sha256(str(post_content).encode()).hexdigest()
     res = hashfunc(int(post_content))
     # b, verify_text, adapt_text['message_prime'], adapt_text['p_prime'], adapt_text['b'], adapt_text['random_r_prime'], adapt_text['C_prime'], adapt_text['c_prime'], adapt_text['epk_prime'], adapt_text['sigma_prime'], adapt_text['res_prime']
-    to_modify_content = str(res[0])
+    chameleon_hashvalue = str(res[0])
     oldhash_verify, message_prime, p_prime, b_prime, random_r_prime, C_prime, c_prime, epk_prime, sigma_prime, newhash_verify = str(res[1]), str(res[2]), str(res[3]), str(res[4]), str(res[5]), str(res[6]), str(res[7]), str(res[8]), str(res[9]), str(res[10])
     # message = str(hashfunc(int(post_content))[1])
-    # tx_hash = sha256(str(to_modify_content).encode()).hexdigest()
-    tx_hash = sha256(to_modify_content.encode()).hexdigest()
+    # tx_hash = sha256(to_modify_content.encode()).hexdigest()
+    tx_hash = str(res[0])
     # print(hashlib.sha256(str(hash_text['b']).encode()).hexdigest())
-    output = {'tx_hash': tx_hash, 'old content': post_content, 'chameleon_hashvalue': to_modify_content, 'oldhash_verify': oldhash_verify, 'message_prime': message_prime, 'p_prime': p_prime, 'newchameleon_hashvalue': b_prime,'random_r_prime': random_r_prime, 'C_prime': C_prime, 'c_prime': c_prime, 'epk_prime': epk_prime, 'sigma_prime': sigma_prime,'newhash_verify': newhash_verify}
+    output = {'tx_hash': tx_hash, 'old content': post_content, 'chameleon_hashvalue': chameleon_hashvalue, 'oldhash_verify': oldhash_verify, 'message_prime': message_prime, 'p_prime': p_prime, 'newchameleon_hashvalue': b_prime,'random_r_prime': random_r_prime, 'C_prime': C_prime, 'c_prime': c_prime, 'epk_prime': epk_prime, 'sigma_prime': sigma_prime,'newhash_verify': newhash_verify}
     with open('./rewrite_data/' + str(tx_hash) + '.txt', 'w') as file:
         file.write(json.dumps(output))
 
     post_object = {
         'author': author,
         'content': post_content,
-        'chameleon_hashvalue': to_modify_content,
-        'tx_hash': tx_hash
+        # 'chameleon_hashvalue': chameleon_hashvalue,
+        'tx_hash': chameleon_hashvalue
     }
 
 

@@ -50,7 +50,7 @@ We provide an execution output example in `./dpss.txt`,
 where `S` is *secret*, `shares_A` indicates the CommitteeA (old committee)'s shares,
  `reshare_A` denotes the re-shares that should be distributed from CommitteeA to CommitteeB (new committee)
  `shares_B` refers to the shares that CommitteeB re-calculate after receiving shares from CommitteeA,
-`recovered_S` means the recovered *secret* from new committee. As shown, it equals to `S`.
+`recovered_S` means the recovered *secret* from new committee. As shown, it is equal to `S`.
 
 
 ## Deploy a blockchain and nodes
@@ -91,6 +91,7 @@ $ flask run --port 8007
 ......
 ```
 As shown below, now we are deploying three nodes on blockchain.
+
 ![Image2](./result/node_three.png)
 
 ## Interact with blockchain
@@ -98,12 +99,15 @@ As shown below, now we are deploying three nodes on blockchain.
 Every node interacts with blockchain by sending transaction via http://localhost:{port_number}.
 In your browser, type http://localhost:{port_number} (e.g., http://localhost:8005/).
 The UI of each node is shown below:
+
 ![Image3](./result/ui1.png).
 
 To send a transaction to blockchain, type the data and your id and by clicking `Post` button.
+
 ![Image4](./result/ui2.png).
 
 To mine the transaction, in your browser, type http://localhost:8001/mine.
+
 ![Image5](./result/ui3.png).
 
 In our construction, each transaction contains the following properties:
@@ -111,53 +115,66 @@ In our construction, each transaction contains the following properties:
 {
     "author": transaction creator,
     "content": post_content,
-    "chameleon_hashvalue": the hashed value (traditional blockchain generates this field by generic SHA256 hash function while we propose a chameleon hash function that allows to change the content but keep
-    the chameleon hash value unchanged, achieving rewrite blockchain),
-    "tx_hash": transaction hash
+    "tx_hash": the hashed value (traditional blockchain generates this field by generic SHA256 hash function while we propose a chameleon hash function that allows to change the content but keep
+    the chameleon hash value unchanged to achieve rewrite blockchain),
+    "timestamp": time
 }
 ```
-**[Warning]: Please note that in the upper-layer real-worl blockchain (Merkle tree structure) only saves the hash value of content (i.e., `chameleon_hashvalue`, not saving the `content` itself).
-This is actually the objective of our paper. Unlike SHA256 hash, the chameleon hash function we proposed allows *m* and *m'* can generate identical hash value, allowing malicious/curious/authorized roles
-to rewrite the blockchain (i.e., the low-layer message `content` can be changed from *m* to *m'* but `chameleon_hashvalue` is unchanged)**
+**[Warning]: Please note that in the upper-layer real-worl blockchain (Merkle tree structure) only saves the `tx_hash` not `content` itself.
+This is actually the objective of our paper. In traditional blockchain
+`tx_hash` (i.e., `H(content)`), `H()` refers to SHA256.
+In our paper, `H()` denotes the chameleon hash function we proposed, which
+allows *m* and *m'* (different message) to have identical hash value.
+Thus, malicious/curious/authorized roles are able to rewrite the blockchain (i.e., the `content` can be changed from *m* to *m'* but `tx_hash` is unchanged)**
 
 The chain data (transaction details) are saved in `./block_data`. As shown below, 
-we give an example with two mined transactions. Please pay attention to the `chameleon_hashvalue`
-and `tx_hash`, we may introduce how to rewrite blockchain in the next section.
+we give an example with two mined transactions. 
+**Please pay attention to the and `tx_hash`, we may introduce how to rewrite blockchain in the next section.**
 
 ![Image6](./result/ui4.png).
 
 
 ## Rewrite blockchain
-In our paper, the objective of blockchain rewriting is: 
-in traditional blockchain constructions, the chain data is computed by generic 
-SHA-256 hash function, which has uniqueness property. That means *m* and *m'* have different hash value.
+In traditional blockchain constructions `tx_hash` (i.e., `H(content)`), 
+`H()` represents SHA-256, where *m* and *m'* have different hash value (collision-resistance property).
+In contrast, in our paper `H()` is a new chameleon hash we proposed 
+that allows *m* and *m'* are able to have the same hash value by performing specific strategy (refers to `Section 5.2` **Adapt()** method). 
 
-In contrast, we propose a new chameleon hash function (refers to `Section 5.2` in our paper)
-that allows *m* and *m'* are able to have the same chameleon hash value by performing specific strategy (refers to `Section 5.2` Adapt() method). By doing so, malicious/curious/authorized roles
-are able to rewrite the blockchain, as low-layer storage *m* can be replaced to *m'*
-but already-stored `chameleon_hashvalue` (stored at upper-layer blockchain's Merkle tree) is unchanged.
+By doing so, malicious/curious/authorized roles
+are able to rewrite the blockchain, as low-layer storage *m* can be replaced by *m'*
+but `tx_hash` (stored at upper-layer blockchain's Merkle tree) is unchanged.
 
 We demonstrate how to rewrite each transaction in `./rewrite_data`. Each file contains the
 required data for each transaction hash. In previous section,
-the two transaction hash are `4df02f684bc9b61acb32a295fb82f53845db5d0895788ba5034cbf23ccbd8123`
-and `9288ba41f86b107436c9c25f5478336c77a317c8bd36f07e217bbe670ca5d4d3`.
+the two transaction hash are 
 
-We provide the example for such two transaction in `./rewrite_data`. Taking 
-`4df02f684bc9b61acb32a295fb82f53845db5d0895788ba5034cbf23ccbd8123` as an example (please
+`[9918161816170064845467122710826772901278662230061595381515813689739, 12108136553740546721779993929916482825396745683250111126990696946019]`
+
+and `[15025510841163558396579001245737269395311360475855163739880122218522, 1255599181276384280583862572561718270445146402237492801822382134568]`.
+
+**Please note that the chameleon hash values take the format of 2-element array(shown above)**
+
+
+The example for such two transaction in `./rewrite_data`. Taking 1st transaction as an example (please
 also refer to `Section 5.2` of our paper),
+
 ![Image6](./result/ui5.png).
 
 where `old content` is the posted content by node 8005,  `chameleon_hashvalue`
-is the hash value by our proposed chameleon hash function,  
+equals to `tx_hash` computed by our proposed chameleon hash function,  
 (`message_prime`, `p_prime`, `newchameleon_hashvalue`, `random_r_prime`, `C_prime`,
- `c_prime`, `epk_prime`, `sigma_prime`) are the required output data of `Adapt()` in `Section 5.2` of our paper, and the `newhash_verify` is the `Verify()`.
+`c_prime`, `epk_prime`, `sigma_prime`) are the required data to rewrite blockchain. 
+**(You may find details in `Adapt()` of `Section 5.2` of our paper).**
+and the `newhash_verify` is the `Verify()` result.
 
 Please find the process of cryptography correctness in our paper.
-For demonstration, you can see that `chameleon_hashvalue` and `newchameleon_hashvalue`
-are same but message *m* is from `800580058005` to *m'* `10922750752118515382477482494832258082451427663424270727346752036252`.
-Meanwhile, `newhash_verify` is `True` indicating the corretness is verified by `Verify()`.
+Generally speaking, you can find that 
 
+-  message *m* is from `800580058005` to *m'* `1486118873378442412242365621264141390816714490447791453132566421618`,
+but `chameleon_hashvalue` and `newchameleon_hashvalue` are same (actually,
+they are equal to `tx_hash`)
 
+- `newhash_verify` is `True`. This value is obtained by executing `Verify()` method, indicating the replacement (rewrite) is corret.
 
 
 

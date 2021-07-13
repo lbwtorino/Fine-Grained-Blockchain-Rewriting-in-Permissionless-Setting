@@ -80,7 +80,7 @@ class Blockchain:
         data = []
         # data.append(self.unconfirmed_transactions[0]['content'])
         # data.append(hashfunc(self.unconfirmed_transactions[0]['content']))
-        data.append(self.unconfirmed_transactions[0]['chameleon_hashvalue'])
+        data.append(self.unconfirmed_transactions[0]['tx_hash'])
         tree = MerkleTree(data, defaulthash)
         path = './block_data/merkle_' + str(block.index)
         # export(tree, filename=path)
@@ -162,7 +162,7 @@ class Blockchain:
             for i in last_block.transactions:
                 # data.append(i[0]['content'])
                 # data.append(hashfunc(i[0]['content']))
-                data.append(i[0]['chameleon_hashvalue'])
+                data.append(i[0]['tx_hash'])
             tree = MerkleTree(data, defaulthash)
             path = './block_data/merkle_' + str(last_block.index)
             # export(tree, filename=path)
@@ -198,7 +198,7 @@ peers = set()
 @app.route('/new_transaction', methods=['POST'])
 def new_transaction():
     tx_data = request.get_json()
-    required_fields = ["author", "content", "chameleon_hashvalue", "tx_hash"]
+    required_fields = ["author", "content", "tx_hash"]
 
     for field in required_fields:
         if not tx_data.get(field):
