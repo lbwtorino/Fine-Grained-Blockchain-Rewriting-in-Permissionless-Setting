@@ -53,7 +53,7 @@ def main():
         threshold = 10
         n = 2 * threshold + 1
         shares_A = share.get_GroupA_shares(S, threshold)
-        # print("shares_A:", shares_A)
+        print("shares_A:", shares_A)
         
 
         # A1 = [B1, B2, B3, B4, B5], A2 = [B1, B2, B3, B4, B5].......
@@ -61,12 +61,12 @@ def main():
         for i in shares_A:
             # share.reshare_GroupA_shares(i) contains 5 numbers/points
             reshare_A.append(share.reshare_GroupA_shares(i))
-        # print("reshare_A:", reshare_A)
+        print("reshare_A:", reshare_A)
 
 
         # shares_B is a size_A * size_B list, shares_B[i] has 5 numbers/points
         shares_B = share.get_GroupB_shares(reshare_A)
-        # print("shares_B:", shares_B)
+        print("shares_B:", shares_B)
 
         # return coefficient [0, a1, a2,.....an]
         new_polynomial = share.generate_new_polynomial()

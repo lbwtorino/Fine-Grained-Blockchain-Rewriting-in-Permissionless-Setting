@@ -148,7 +148,7 @@ class CHAMELEON(ABEnc):
         p_prime = g**e
         b = g**message * p_prime**random_r
         res = {}
-        res['message'] = message
+        res['_message'] = _message
         res['b'] = b
         return res
 
@@ -237,4 +237,4 @@ class CHAMELEON(ABEnc):
         res_prime = self.verify(mpk, message_prime, p_prime, b, random_r_prime, C_prime, c_prime, epk_prime, sigma_prime, keypair_pk_prime)
         print(res_prime)
         # step 6
-        return {'message_prime':message_prime, 'p_prime':p_prime, 'b':b, 'random_r_prime':random_r_prime, 'C_prime':C_prime, 'c_prime':c_prime, 'epk_prime': epk_prime, 'sigma_prime': sigma_prime}
+        return {'message_prime':message_prime, 'p_prime':p_prime, 'b':b, 'random_r_prime':random_r_prime, 'C_prime':C_prime, 'c_prime':c_prime, 'epk_prime': epk_prime, 'sigma_prime': sigma_prime, 'res_prime':res_prime}

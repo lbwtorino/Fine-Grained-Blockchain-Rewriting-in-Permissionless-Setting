@@ -155,6 +155,7 @@ class SCHEME(ABEnc):
         epk = g**esk
         c = g**(keypair_sk + R) 
         sigma = esk + keypair_sk * group.hash((str(epk)+str(c)), ZR)
+        print("b:", b, "\nmessage:", message)
 
         return {'message':message, 'p_prime':p_prime, 'b':b, 'random_r':random_r, 'C':C, 'c':c, 'epk':epk, 'sigma': sigma, 'keypair_pk':keypair_pk}
 
@@ -215,4 +216,6 @@ class SCHEME(ABEnc):
         res_prime = self.verify(mpk, message_prime, p_prime, b, random_r_prime, C_prime, c_prime, epk_prime, sigma_prime, keypair_pk_prime)
         print(res_prime)
         # step 6
+        print("b:", b, "\nmessage':", message_prime)
+
         return {'message_prime':message_prime, 'p_prime':p_prime, 'b':b, 'random_r_prime':random_r_prime, 'C_prime':C_prime, 'c_prime':c_prime, 'epk_prime': epk_prime, 'sigma_prime': sigma_prime}
