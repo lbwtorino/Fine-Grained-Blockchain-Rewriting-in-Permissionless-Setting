@@ -42,7 +42,7 @@ You can also seperately run and test DPSS protocol,
 $ python main.py DPSS
 ```
 
-## Interaction with blockchain
+<!-- ## Interaction with blockchain
 
 Install the dependencies,
 
@@ -75,7 +75,7 @@ $ flask run --port 8004 &
 ```
 
 Every node interacts with blockchain by sending transaction via http://localhost:{port_number}.
-The chain data is saved in `./block_data`.
+The chain data is saved in `./block_data`. -->
 
 To rewrite the blockchain, a modifier needs to generate a same chameleon hash but with new message `m'`.
 The correctness is proven in our paper.
