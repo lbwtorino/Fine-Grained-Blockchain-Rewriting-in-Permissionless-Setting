@@ -8,12 +8,13 @@ from merklelib import MerkleTree, beautify, export
 from merkle import hashfunc, defaulthash
 
 class Block:
-    def __init__(self, index, transactions, timestamp, previous_hash, nonce=0):
+    # def __init__(self, index, transactions, timestamp, previous_hash, nonce=0):
+    def __init__(self, index, transactions, previous_hash):
         self.index = index
         self.transactions = transactions
-        self.timestamp = timestamp
+        # self.timestamp = timestamp
         self.previous_hash = previous_hash
-        self.nonce = nonce
+        # self.nonce = nonce
         # self.tx_index = tx_index
 
     def compute_hash(self):
@@ -39,7 +40,8 @@ class Blockchain:
         the chain. The block has index 0, previous_hash as 0, and
         a valid hash.
         """
-        genesis_block = Block(0, [], 0, "0")
+        # genesis_block = Block(0, [], 0, "0")
+        genesis_block = Block(0, [], "0")
         genesis_block.hash = genesis_block.compute_hash()
         self.chain.append(genesis_block)
 
@@ -69,7 +71,8 @@ class Blockchain:
         transaction = []
         _transaction.append(list(block.transactions))
         transaction.append(_transaction)
-        write_content = {'index':block.index, 'transactions':self.unconfirmed_transactions, 'timestamp':block.timestamp, 'previous_hash':block.previous_hash, 'nonce': block.nonce, 'hash':block.hash}
+        # write_content = {'index':block.index, 'transactions':self.unconfirmed_transactions, 'timestamp':block.timestamp, 'previous_hash':block.previous_hash, 'nonce': block.nonce, 'hash':block.hash}
+        write_content = {'index':block.index, 'transactions':self.unconfirmed_transactions,  'previous_hash':block.previous_hash, 'hash':block.hash}
         # test_json = json.dumps(test)
         file_name = './block_data/block_' + str(block.index) + '.json'
         with open(file_name, 'w') as outfile:
@@ -77,7 +80,7 @@ class Blockchain:
         data = []
         # data.append(self.unconfirmed_transactions[0]['content'])
         # data.append(hashfunc(self.unconfirmed_transactions[0]['content']))
-        data.append(self.unconfirmed_transactions[0]['to_modify'])
+        data.append(self.unconfirmed_transactions[0]['chameleon_hashvalue'])
         tree = MerkleTree(data, defaulthash)
         path = './block_data/merkle_' + str(block.index)
         # export(tree, filename=path)
@@ -149,7 +152,8 @@ class Blockchain:
         if Blockchain.size <= 2:
             last_block.transactions.append(self.unconfirmed_transactions)
             Blockchain.size += 1
-            test = {'index':last_block.index, 'transactions':last_block.transactions, 'timestamp':last_block.timestamp, 'previous_hash':last_block.previous_hash, 'nonce': last_block.nonce, 'hash':last_block.hash}
+            # test = {'index':last_block.index, 'transactions':last_block.transactions, 'timestamp':last_block.timestamp, 'previous_hash':last_block.previous_hash, 'nonce': last_block.nonce, 'hash':last_block.hash}
+            test = {'index':last_block.index, 'transactions':last_block.transactions, 'previous_hash':last_block.previous_hash, 'hash':last_block.hash}
             # test = {'index':last_block.transactions}
             file_name = './block_data/block_' + str(last_block.index) + '.json'
             with open(file_name, 'w') as outfile:
@@ -158,7 +162,7 @@ class Blockchain:
             for i in last_block.transactions:
                 # data.append(i[0]['content'])
                 # data.append(hashfunc(i[0]['content']))
-                data.append(i[0]['to_modify'])
+                data.append(i[0]['chameleon_hashvalue'])
             tree = MerkleTree(data, defaulthash)
             path = './block_data/merkle_' + str(last_block.index)
             # export(tree, filename=path)
@@ -166,7 +170,7 @@ class Blockchain:
             Blockchain.size = 1
             new_block = Block(index=last_block.index + 1,
                             transactions=[self.unconfirmed_transactions],
-                            timestamp=time.time(),
+                            # timestamp=time.time(),
                             previous_hash=last_block.hash)
             
 
@@ -194,7 +198,7 @@ peers = set()
 @app.route('/new_transaction', methods=['POST'])
 def new_transaction():
     tx_data = request.get_json()
-    required_fields = ["author", "content", "to_modify", "tx_hash"]
+    required_fields = ["author", "content", "chameleon_hashvalue", "tx_hash"]
 
     for field in required_fields:
         if not tx_data.get(field):
@@ -293,9 +297,10 @@ def create_chain_from_dump(chain_dump):
             continue  # skip genesis block
         block = Block(block_data["index"],
                       block_data["transactions"],
-                      block_data["timestamp"],
-                      block_data["previous_hash"],
-                      block_data["nonce"])
+                    #   block_data["timestamp"],
+                      block_data["previous_hash"]
+                    #   block_data["nonce"]
+                      )
         proof = block_data['hash']
         added = generated_blockchain.add_block(block, proof)
         if not added:
@@ -311,9 +316,10 @@ def verify_and_add_block():
     block_data = request.get_json()
     block = Block(block_data["index"],
                   block_data["transactions"],
-                  block_data["timestamp"],
-                  block_data["previous_hash"],
-                  block_data["nonce"])
+                #   block_data["timestamp"],
+                  block_data["previous_hash"]
+                #   block_data["nonce"]
+                  )
 
     proof = block_data['hash']
     added = blockchain.add_block(block, proof)

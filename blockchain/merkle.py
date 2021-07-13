@@ -14,13 +14,30 @@ curve = 'MNT224'
 groupObj = PairingGroup(curve)
 chameleon = CHAMELEON(groupObj)
 (mpk, msk) = chameleon.setup()
+policy = '(123 or 444) and (231 or 384)'
+sk = chameleon.keygen(mpk, msk, policy)
 
 def hashfunc(value):
 #   return hashlib.sha256(str(value).encode()).hexdigest()
-    return chameleon.generate_chameleon_hash(mpk, value)['b']
+    # res = chameleon.generate_chameleon_hash(mpk, value)
+    # b = res['b']
+    # return chameleon.generate_chameleon_hash(mpk, value)['b']
+    message = groupObj.init(ZR, int(value))
+    attri_list = {'123', '444',  '231', '384'}
+    hash_text = chameleon.hash(mpk, msk, message, attri_list)
+    p_prime, b, random_r = hash_text['p_prime'], hash_text['b'], hash_text['random_r']
+    C, c, epk, sigma = hash_text['C'], hash_text['c'], hash_text['epk'], hash_text['sigma']
+    keypair_pk = hash_text['keypair_pk']
+    verify_text = chameleon.verify(mpk, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk)
+    # m′, p′, b, r′, C′, c′, epk′, σ′
+    # return {'message_prime':message_prime, 'p_prime':p_prime, 'b':b, 'random_r_prime':random_r_prime, 'C_prime':C_prime, 'c_prime':c_prime, 'epk_prime': epk_prime, 'sigma_prime': sigma_prime, 'res_prime':res_prime}
+    adapt_text = chameleon.adapt(mpk, msk, sk, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk)
+    return b, verify_text, adapt_text['message_prime'], adapt_text['p_prime'], adapt_text['b'], adapt_text['random_r_prime'], adapt_text['C_prime'], adapt_text['c_prime'], adapt_text['epk_prime'], adapt_text['sigma_prime'], adapt_text['res_prime']
 
 def defaulthash(value):
     return hashlib.sha256(value).hexdigest()
+
+print(groupObj.init(ZR, int(100)))
 
 
 # a list of all ASCII letters
