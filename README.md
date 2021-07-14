@@ -36,8 +36,9 @@ Once installed all the dependencies, to run and test ABET scheme,
 ```sh
 $ python main.py ABET
 ```
-The ABET logic is from `scheme.py`, including `setup()`, `KeyGen()`, `Hash()`,`Verify()`
-and `Adapt()`.  
+The ABET logic is from `scheme.py`, including `Setup()`, `KeyGen()`, `Hash()`,`Verify()`
+and `Adapt()` functions.
+We provide an output file (the output data objects are referred to `Section 5.2` of our paper) in `ABET.txt`.
 
 
 You can also seperately run and test DPSS protocol, 

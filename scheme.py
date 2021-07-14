@@ -15,6 +15,7 @@ class SCHEME(ABEnc):
         self.index_j = 5
 
     def setup(self):
+        print("================================Setup()======================================")
         # g, u, v, w, h
         # G2 --> H, G1 --> G
         h = group.random(G2)
@@ -43,11 +44,14 @@ class SCHEME(ABEnc):
         mpk = {'g':g, 'u':u, 'v':v, 'w':w, 'h':h, 'egg':egg, 'vector_g_alpha': vector_g_alpha, 'vector_h_alpha': vector_h_alpha, 'g_beta': g_beta, 'h_1_alpha': h_1_alpha, 'h_beta_alpha': h_beta_alpha, 'egg_theta_alpha': egg_theta_alpha}
         # msk
         msk = {'alpha':alpha, 'beta':beta, 'theta': theta}
+        print("\nmpk:", mpk)
+        print("\n\n\nmsk:", msk)
         return (mpk, msk)
 
 
 
     def keygen(self, mpk, msk, policy_str):
+        print("\n\n\n================================KeyGen()======================================")
         # the secret alpha will be shared according to the policy	
         policy = util.createPolicy(policy_str)
         # retrieve the attributes that occur in a policy tree in order (left to right)
@@ -96,6 +100,7 @@ class SCHEME(ABEnc):
             I.append(tmp)
         vector_i *= mpk['g']
         sk_1 = mpk['g']**msk['theta'] * vector_i**sum_t * mpk['g']**(msk['beta']*sum_r)
+        print("\n sk:", {'Policy':policy_str, 'SK1':SK1, 'SK2':SK2, 'SK3':SK3, 'sk_0': sk_0, 'sk_1': sk_1})
         return {'Policy':policy_str, 'SK1':SK1, 'SK2':SK2, 'SK3':SK3, 'sk_0': sk_0, 'sk_1': sk_1}
 
     def helper_gen_ciphertext(self, mpk, msk, R, attri_list):
@@ -135,6 +140,7 @@ class SCHEME(ABEnc):
         return {'attri_list':attri_list, 'ct':ct, 'CT1':CT1, 'CT2':CT2, 'ct_0':ct_0, 'ct_1':ct_1} 
 
     def hash(self, mpk, msk, message, attri_list):
+        print("\n\n\n================================Hash()======================================")
         # step 1
         g = mpk['g']
         random_r = group.random(ZR)
@@ -153,18 +159,20 @@ class SCHEME(ABEnc):
         epk = g**esk
         c = g**(keypair_sk + R) 
         sigma = esk + keypair_sk * group.hash((str(epk)+str(c)), ZR)
-        print("b:", b, "\nmessage:", message)
+        #  (m, p′, b, r, C, c, epk, σ).
+        print("\n output:", {'message':message, 'p_prime':p_prime, 'b':b, 'random_r':random_r, 'C':C, 'c':c, 'epk':epk, 'sigma': sigma, 'keypair_pk':keypair_pk})
         return {'message':message, 'p_prime':p_prime, 'b':b, 'random_r':random_r, 'C':C, 'c':c, 'epk':epk, 'sigma': sigma, 'keypair_pk':keypair_pk}
 
     def verify(self, mpk, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk):
         g = mpk['g']
         g_message_p_prime_r = g**message * p_prime**random_r
         epk_pk = epk * keypair_pk**group.hash(str(epk)+str(c), ZR)
+        print("\nVerify() result:", (b == g_message_p_prime_r) and (g**sigma == epk_pk))
         return (b == g_message_p_prime_r) and (g**sigma == epk_pk)
-
 
     # def decrypt(self, mpk, sk, ct, message):
     def adapt(self, mpk, msk, sk, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk):
+        print("\n\n\n================================Adapt()======================================")
         # step 1
         res = self.verify(mpk, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk)
 
@@ -211,8 +219,8 @@ class SCHEME(ABEnc):
         sigma_prime = esk_prime + keypair_sk_prime * group.hash((str(epk_prime)+str(c_prime)), ZR)
 
         res_prime = self.verify(mpk, message_prime, p_prime, b, random_r_prime, C_prime, c_prime, epk_prime, sigma_prime, keypair_pk_prime)
-        print(res_prime)
+        # print(res_prime)
         # step 6
-        print("b:", b, "\nmessage':", message_prime)
-
+        # (m′, p′, b, r′, C′, c′, epk′, σ′).
+        print("\n\n\nAdapt() output:", {'message_prime':message_prime, 'p_prime':p_prime, 'b':b, 'random_r_prime':random_r_prime, 'C_prime':C_prime, 'c_prime':c_prime, 'epk_prime': epk_prime, 'sigma_prime': sigma_prime})
         return {'message_prime':message_prime, 'p_prime':p_prime, 'b':b, 'random_r_prime':random_r_prime, 'C_prime':C_prime, 'c_prime':c_prime, 'epk_prime': epk_prime, 'sigma_prime': sigma_prime}

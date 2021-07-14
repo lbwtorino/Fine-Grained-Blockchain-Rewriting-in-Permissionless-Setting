@@ -39,6 +39,7 @@ def main():
         p_prime, b, random_r = hash_text['p_prime'], hash_text['b'], hash_text['random_r']
         C, c, epk, sigma = hash_text['C'], hash_text['c'], hash_text['epk'], hash_text['sigma']
         keypair_pk = hash_text['keypair_pk']
+        print("\n\n\n================================Verify()======================================")
         verify_text = scheme.verify(mpk, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk)
 
         adapt_text = scheme.adapt(mpk, msk, sk, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk)
