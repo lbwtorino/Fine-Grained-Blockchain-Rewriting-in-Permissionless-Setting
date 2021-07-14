@@ -47,13 +47,12 @@ $ python main.py DPSS
 ```
 The DPSS logic is from `sharing.py`. In the test case, we provide the data shared between 
 old committees and new committees (both size includes 5 committee members).
-We provide an execution output example in `./DPSS.txt`,
-where `Secret` is *Secret* (in our scenria, *Secret* is `msk['alpha']`), `The shares to Committee A` indicates the Committee A (old committee)'s shares (in this demo, it contains 5 shares and each of them is distributed to every member in Committee A),
- `The shares from Committee A to Committee B:` denotes the re-shares that should be distributed from Committee A to new Committee B (as size of Committee B is 5, every Committee A re-calculate its shares into 5 slices, each slice is distributed to each Committee B member),
- `The new shares in Committee B:` refers to the shares that Committee B re-calculate after receiving shares from Committee A (obviously, each Committee B member will receive 5 slices from 5 Committee A members.
- Then, for each Committee B member, he use Shamir's recovery algorithm to calculate a value.
+We provide an execution output example in `./DPSS.txt`, where 
+- `Secret` is *Secret* (in our scenria, *Secret* is `msk['alpha']`), `The shares to Committee A` indicates the Committee A (old committee)'s shares (in this demo, it contains 5 shares and each of them is distributed to every member in Committee A),
+- `The shares from Committee A to Committee B:` denotes the re-shares that should be distributed from Committee A to new Committee B (as size of Committee B is 5, every Committee A re-calculate its shares into 5 slices, each slice is distributed to each Committee B member),
+- `The new shares in Committee B:` refers to the shares that Committee B re-calculate after receiving shares from Committee A (obviously, each Committee B member will receive 5 slices from 5 Committee A members. Then, for each Committee B member, he use Shamir's recovery algorithm to calculate a value.
  This value is the new share for himself),
-`recovered_Secret` means the recovered *secret* from new Committee B. 
+- `recovered_Secret` means the recovered *secret* from new Committee B. 
 As shown, `recovered_Secret` is equal to `Secret`.
 
 
@@ -114,16 +113,12 @@ To mine the transaction, in your browser, type http://localhost:8001/mine.
 
 ![Image5](./result/ui3.png).
 
-In our construction, each transaction contains the following properties:
-```json
-{
-    "author": transaction creator,
-    "content": post_content,
-    "tx_hash": the hashed value (traditional blockchain generates this field by generic SHA256 hash function while we propose a chameleon hash function that allows to change the content but keep
-    the chameleon hash value unchanged to achieve rewrite blockchain),
-    "timestamp": time
-}
-```
+In our construction, each transaction contains the following properties (a json format):
+- "author": transaction creator,
+- "content": post_content,
+- "tx_hash": the hashed value (traditional blockchain generates this field by generic SHA256 hash function while we propose a chameleon hash function that allows to change the content but keep the chameleon hash value unchanged to achieve rewrite blockchain),
+- "timestamp": time
+
 **[Warning]: Please note that in the upper-layer real-worl blockchain (Merkle tree structure) only saves the `tx_hash` not `content` itself.
 This is actually the objective of our paper. In traditional blockchain
 `tx_hash` (i.e., `H(content)`), `H()` refers to SHA256.
@@ -160,16 +155,17 @@ and `[15025510841163558396579001245737269395311360475855163739880122218522, 1255
 
 
 The example for such two transaction in `./rewrite_data`. Taking 1st transaction as an example (please
-also refer to `Section 5.2` of our paper),
+also refer to `Section 5.2` of our paper), where
 
 ![Image6](./result/ui5.png).
 
-where `old content` is the posted content by node 8005,  `chameleon_hashvalue`
+- `old content` is the posted content by node 8005,  
+- `chameleon_hashvalue`
 equals to `tx_hash` computed by our proposed chameleon hash function,  
-(`message_prime`, `p_prime`, `newchameleon_hashvalue`, `random_r_prime`, `C_prime`,
+- (`message_prime`, `p_prime`, `newchameleon_hashvalue`, `random_r_prime`, `C_prime`,
 `c_prime`, `epk_prime`, `sigma_prime`) are the required data to rewrite blockchain. 
 **(You may find details in `Adapt()` of `Section 5.2` of our paper).**
-and the `newhash_verify` is the `Verify()` result.
+- `newhash_verify` is the `Verify()` result.
 
 Please find the process of cryptography correctness in our paper.
 Generally speaking, you can find that 
