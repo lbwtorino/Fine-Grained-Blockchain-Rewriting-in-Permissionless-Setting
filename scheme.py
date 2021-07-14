@@ -44,8 +44,8 @@ class SCHEME(ABEnc):
         mpk = {'g':g, 'u':u, 'v':v, 'w':w, 'h':h, 'egg':egg, 'vector_g_alpha': vector_g_alpha, 'vector_h_alpha': vector_h_alpha, 'g_beta': g_beta, 'h_1_alpha': h_1_alpha, 'h_beta_alpha': h_beta_alpha, 'egg_theta_alpha': egg_theta_alpha}
         # msk
         msk = {'alpha':alpha, 'beta':beta, 'theta': theta}
-        print("\nmpk:", mpk)
-        print("\n\n\nmsk:", msk)
+        print("\nmpk:\n", mpk)
+        print("\n\nmsk:\n", msk)
         return (mpk, msk)
 
 
@@ -100,7 +100,7 @@ class SCHEME(ABEnc):
             I.append(tmp)
         vector_i *= mpk['g']
         sk_1 = mpk['g']**msk['theta'] * vector_i**sum_t * mpk['g']**(msk['beta']*sum_r)
-        print("\n sk:", {'Policy':policy_str, 'SK1':SK1, 'SK2':SK2, 'SK3':SK3, 'sk_0': sk_0, 'sk_1': sk_1})
+        print("\n sk:\n", {'Policy':policy_str, 'SK1':SK1, 'SK2':SK2, 'SK3':SK3, 'sk_0': sk_0, 'sk_1': sk_1})
         return {'Policy':policy_str, 'SK1':SK1, 'SK2':SK2, 'SK3':SK3, 'sk_0': sk_0, 'sk_1': sk_1}
 
     def helper_gen_ciphertext(self, mpk, msk, R, attri_list):
@@ -160,14 +160,14 @@ class SCHEME(ABEnc):
         c = g**(keypair_sk + R) 
         sigma = esk + keypair_sk * group.hash((str(epk)+str(c)), ZR)
         #  (m, p′, b, r, C, c, epk, σ).
-        print("\n output:", {'message':message, 'p_prime':p_prime, 'b':b, 'random_r':random_r, 'C':C, 'c':c, 'epk':epk, 'sigma': sigma, 'keypair_pk':keypair_pk})
+        print("\n output:\n", {'message':message, 'p_prime':p_prime, 'b':b, 'random_r':random_r, 'C':C, 'c':c, 'epk':epk, 'sigma': sigma, 'keypair_pk':keypair_pk})
         return {'message':message, 'p_prime':p_prime, 'b':b, 'random_r':random_r, 'C':C, 'c':c, 'epk':epk, 'sigma': sigma, 'keypair_pk':keypair_pk}
 
     def verify(self, mpk, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk):
         g = mpk['g']
         g_message_p_prime_r = g**message * p_prime**random_r
         epk_pk = epk * keypair_pk**group.hash(str(epk)+str(c), ZR)
-        print("\nVerify() result:", (b == g_message_p_prime_r) and (g**sigma == epk_pk))
+        print("\nVerify() result:\n", (b == g_message_p_prime_r) and (g**sigma == epk_pk))
         return (b == g_message_p_prime_r) and (g**sigma == epk_pk)
 
     # def decrypt(self, mpk, sk, ct, message):
@@ -222,5 +222,5 @@ class SCHEME(ABEnc):
         # print(res_prime)
         # step 6
         # (m′, p′, b, r′, C′, c′, epk′, σ′).
-        print("\n\n\nAdapt() output:", {'message_prime':message_prime, 'p_prime':p_prime, 'b':b, 'random_r_prime':random_r_prime, 'C_prime':C_prime, 'c_prime':c_prime, 'epk_prime': epk_prime, 'sigma_prime': sigma_prime})
+        print("\n\n\nAdapt() output:\n", {'message_prime':message_prime, 'p_prime':p_prime, 'b':b, 'random_r_prime':random_r_prime, 'C_prime':C_prime, 'c_prime':c_prime, 'epk_prime': epk_prime, 'sigma_prime': sigma_prime})
         return {'message_prime':message_prime, 'p_prime':p_prime, 'b':b, 'random_r_prime':random_r_prime, 'C_prime':C_prime, 'c_prime':c_prime, 'epk_prime': epk_prime, 'sigma_prime': sigma_prime}

@@ -47,11 +47,14 @@ $ python main.py DPSS
 ```
 The DPSS logic is from `sharing.py`. In the test case, we provide the data shared between 
 old committees and new committees (both size includes 5 committee members).
-We provide an execution output example in `./dpss.txt`,
-where `S` is *secret*, `shares_A` indicates the CommitteeA (old committee)'s shares,
- `reshare_A` denotes the re-shares that should be distributed from CommitteeA to CommitteeB (new committee)
- `shares_B` refers to the shares that CommitteeB re-calculate after receiving shares from CommitteeA,
-`recovered_S` means the recovered *secret* from new committee. As shown, it is equal to `S`.
+We provide an execution output example in `./DPSS.txt`,
+where `Secret` is *Secret* (in our scenria, *Secret* is `msk['alpha']`), `The shares to Committee A` indicates the Committee A (old committee)'s shares (in this demo, it contains 5 shares and each of them is distributed to every member in Committee A),
+ `The shares from Committee A to Committee B:` denotes the re-shares that should be distributed from Committee A to new Committee B (as size of Committee B is 5, every Committee A re-calculate its shares into 5 slices, each slice is distributed to each Committee B member),
+ `The new shares in Committee B:` refers to the shares that Committee B re-calculate after receiving shares from Committee A (obviously, each Committee B member will receive 5 slices from 5 Committee A members.
+ Then, for each Committee B member, he use Shamir's recovery algorithm to calculate a value.
+ This value is the new share for himself),
+`recovered_Secret` means the recovered *secret* from new Committee B. 
+As shown, `recovered_Secret` is equal to `Secret`.
 
 
 ## Deploy a blockchain and nodes

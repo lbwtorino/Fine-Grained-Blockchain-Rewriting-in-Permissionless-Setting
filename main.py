@@ -23,14 +23,14 @@ def main():
 
     (mpk, msk) = scheme.setup()
 
-    policy = '(123 or 444) and (231 or 384)'
-    sk = scheme.keygen(mpk, msk, policy)
-
     parser = argparse.ArgumentParser()
     parser.add_argument("modules")
     args = parser.parse_args()
 
     if args.modules == 'ABET':
+        policy = '(123 or 444) and (231 or 384)'
+        sk = scheme.keygen(mpk, msk, policy)
+
         message = groupObj.random(ZR)
         attri_list = {'123', '444',  '231', '384'}
         hash_text = scheme.hash(mpk, msk, message, attri_list)
@@ -45,28 +45,34 @@ def main():
         adapt_text = scheme.adapt(mpk, msk, sk, message, p_prime, b, random_r, C, c, epk, sigma, keypair_pk)
 
     elif args.modules == 'DPSS':
-        print(time.time())
+        # print(time.time())
         share = SHARING(groupObj)
         alpha = msk['alpha']
         S = groupObj.init(ZR, int(alpha))
-        print("S:", S)
+        print("\n\n=============================== Secret (i.e., msk['alpha']) ======================================")
+        print("\n\nSecret:\n", S)
 
         threshold = 10
         n = 2 * threshold + 1
         shares_A = share.get_GroupA_shares(S, threshold)
-        print("shares_A:", shares_A)
+        print("\n\n=============================== Distribute shares to Committee A ======================================")
+        print("\n\nThe shares to Committee A:\n", shares_A)
         
         # A1 = [B1, B2, B3, B4, B5], A2 = [B1, B2, B3, B4, B5].......
         reshare_A = []
         for i in shares_A:
             # share.reshare_GroupA_shares(i) contains 5 numbers/points
             reshare_A.append(share.reshare_GroupA_shares(i))
-        print("reshare_A:", reshare_A)
+        print("\n\n=============================== Re-calculate shares in Committee A ======================================")
+        print("==================== Distribute new shares from Committee A to Committee B ==============================")
+        print("\n\nThe shares from Committee A to Committee B:\n", reshare_A)
 
 
         # shares_B is a size_A * size_B list, shares_B[i] has 5 numbers/points
         shares_B = share.get_GroupB_shares(reshare_A)
-        print("shares_B:", shares_B)
+        print("\n\n=============================== Committee B members receive share slices from Committee A ======================================")
+        print("===========================================Committee B members recover new shares ==============================================")
+        print("\n\nThe new shares in Committee B:\n", shares_B)
 
         # return coefficient [0, a1, a2,.....an]
         new_polynomial = share.generate_new_polynomial()
@@ -77,8 +83,9 @@ def main():
             B[i] = share.update_polynomial(share.recover_secret(shares_B[i]), new_polynomial)
 
         updated_S = share.update(B)
-        print(time.time())
-        print("recovered_S:", share.recover_secret(updated_S))
+        # print(time.time())
+        print("\n\n=============================== Recovered Secret in Committee B ======================================")
+        print("recovered_Secret:\n", share.recover_secret(updated_S))
 
     else:
         print("Invalid argument.")
