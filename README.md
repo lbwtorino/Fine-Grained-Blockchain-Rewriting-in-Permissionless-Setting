@@ -119,16 +119,12 @@ In our construction, each transaction contains the following properties (a json 
 - "tx_hash": the hashed value (traditional blockchain generates this field by generic SHA256 hash function while we propose a chameleon hash function that allows to change the content but keep the chameleon hash value unchanged to achieve rewrite blockchain),
 - "timestamp": time
 
-**[Warning]: Please note that in the upper-layer real-worl blockchain (Merkle tree structure) only saves the `tx_hash` not `content` itself (as shown below).
-This is actually the objective of our paper. In traditional blockchain
-`tx_hash` (i.e., `H(content)`), `H()` refers to SHA256.
+**[Objective]: Please note that in the upper-layer real-worl blockchain (Merkle tree structure) only saves the `tx_hash` not `content` itself (as shown below). This is actually the objective of our paper. In traditional blockchain `tx_hash` (i.e., `H(content)`), `H()` refers to SHA256.**
 
 ![Image111](./result/merkle.png).
 
 
-In our paper, `H()` denotes the chameleon hash function we proposed, which
-allows *m* and *m'* (different message) to have identical hash value.
-Thus, malicious/curious/authorized roles are able to rewrite the blockchain (i.e., the `content` can be changed from *m* to *m'* but `tx_hash` is unchanged)**
+**In our paper, `H()` denotes the chameleon hash function we proposed, which allows *m* and *m'* (different message) to have identical hash value. Thus, malicious/curious/authorized roles are able to rewrite the blockchain (i.e., the `content` can be changed from *m* to *m'* but `tx_hash` is unchanged)**
 
 ![Image222](./result/merkle-merkle.png).
 
