@@ -119,12 +119,19 @@ In our construction, each transaction contains the following properties (a json 
 - "tx_hash": the hashed value (traditional blockchain generates this field by generic SHA256 hash function while we propose a chameleon hash function that allows to change the content but keep the chameleon hash value unchanged to achieve rewrite blockchain),
 - "timestamp": time
 
-**[Warning]: Please note that in the upper-layer real-worl blockchain (Merkle tree structure) only saves the `tx_hash` not `content` itself.
+**[Warning]: Please note that in the upper-layer real-worl blockchain (Merkle tree structure) only saves the `tx_hash` not `content` itself (as shown below).
 This is actually the objective of our paper. In traditional blockchain
 `tx_hash` (i.e., `H(content)`), `H()` refers to SHA256.
+
+![Image111](./result/merkle.png).
+
+
 In our paper, `H()` denotes the chameleon hash function we proposed, which
 allows *m* and *m'* (different message) to have identical hash value.
 Thus, malicious/curious/authorized roles are able to rewrite the blockchain (i.e., the `content` can be changed from *m* to *m'* but `tx_hash` is unchanged)**
+
+![Image222](./result/merkle-merkle.png).
+
 
 The chain data (transaction details) are saved in `./block_data`. As shown below, 
 we give an example with two mined transactions. 
@@ -142,6 +149,9 @@ that allows *m* and *m'* are able to have the same hash value by performing spec
 By doing so, malicious/curious/authorized roles
 are able to rewrite the blockchain, as low-layer storage *m* can be replaced by *m'*
 but `tx_hash` (stored at upper-layer blockchain's Merkle tree) is unchanged.
+
+![Image333](./result/merkle-merkle.png).
+
 
 We demonstrate how to rewrite each transaction in `./rewrite_data`. Each file contains the
 required data for each transaction hash. In previous section,
