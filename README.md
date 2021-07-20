@@ -41,7 +41,7 @@ and `Adapt()` functions.
 We provide an output file (the output data objects are referred to `Section 5.2` of our paper) in `ABET.txt`.
 
 
-You can also seperately run and test DPSS protocol, 
+You can also seperately run and test DPSS protocol, make sure your python installed `fractions` package,
 ```sh
 $ python main.py DPSS
 ```
