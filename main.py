@@ -52,7 +52,7 @@ def main():
         print("\n\n=============================== Secret (i.e., msk['alpha']) ======================================")
         print("\n\nSecret:\n", S)
 
-        threshold = 10
+        threshold = 2
         n = 2 * threshold + 1
         shares_A = share.get_GroupA_shares(S, threshold)
         print("\n\n=============================== Distribute shares to Committee A ======================================")
