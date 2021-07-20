@@ -63,7 +63,7 @@ Install the dependencies,
 ```sh
 $ cd blockchain/
 $ pip install -r requirements.txt
-$ (optional: install merklelib if your python environment doesn't have before, refer to node_server.py line 7)
+$ (optional: install [merklelib](https://github.com/vpaliy/merklelib) if your python environment doesn't have before, refer to node_server.py line 7)
 ```
 
 Start a blockchain, the port number is set to 8001,
