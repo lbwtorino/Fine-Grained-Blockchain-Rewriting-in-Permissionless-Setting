@@ -72,8 +72,8 @@ class SHARING(ABEnc):
     def recover_secret(self, shares):
         points_index, points_value = [], []
         for i in range(self.threshold+1):
-            points_index.append(self.size_B-i)
-            points_value.append(shares[self.size_B-1-i])
+            points_index.append(self.size_A-i)
+            points_value.append(shares[self.size_A-1-i])
         l = []
         for i in range(self.threshold+1):
             l.append(self.compute_l(points_index, i))
@@ -111,11 +111,10 @@ class SHARING(ABEnc):
         return res
 
     def update(self, B):
-        # B is (2* threshold + 1) list[]
         res = []
-        for i in range(self.size_B):
+        for i in range(self.size_A):
             tmp = []
-            for j in range(self.size_B):
+            for j in range(self.size_A):
                 tmp.append(B[j][i])
             res.append(self.recover_secret(tmp)[0])
         # (2* threshold + 1) numbers
