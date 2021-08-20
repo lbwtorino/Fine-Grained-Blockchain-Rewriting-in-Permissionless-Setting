@@ -72,7 +72,7 @@ class Blockchain:
         _transaction.append(list(block.transactions))
         transaction.append(_transaction)
         # write_content = {'index':block.index, 'transactions':self.unconfirmed_transactions, 'timestamp':block.timestamp, 'previous_hash':block.previous_hash, 'nonce': block.nonce, 'hash':block.hash}
-        write_content = {'index':block.index, 'transactions':self.unconfirmed_transactions,  'previous_hash':block.previous_hash, 'hash':block.hash}
+        write_content = {'index':block.index, 'transactions':block.transactions,  'previous_hash':block.previous_hash, 'hash':block.hash}
         # test_json = json.dumps(test)
         file_name = './block_data/block_' + str(block.index) + '.json'
         with open(file_name, 'w') as outfile:
@@ -80,7 +80,7 @@ class Blockchain:
         data = []
         # data.append(self.unconfirmed_transactions[0]['content'])
         # data.append(hashfunc(self.unconfirmed_transactions[0]['content']))
-        data.append(self.unconfirmed_transactions[0]['tx_hash'])
+        data.append(block.transactions[0]['tx_hash'])
         tree = MerkleTree(data, defaulthash)
         path = './block_data/merkle_' + str(block.index)
         # export(tree, filename=path)
@@ -146,37 +146,65 @@ class Blockchain:
 
         if not self.unconfirmed_transactions:
             return False
-
         last_block = self.last_block
+#         print("last_block: ", last_block.index)
+#         print("last_block transaction: ", last_block.transactions)
+        new_mined = False
 
-        if Blockchain.size <= 2:
-            last_block.transactions.append(self.unconfirmed_transactions)
-            Blockchain.size += 1
-            # test = {'index':last_block.index, 'transactions':last_block.transactions, 'timestamp':last_block.timestamp, 'previous_hash':last_block.previous_hash, 'nonce': last_block.nonce, 'hash':last_block.hash}
-            test = {'index':last_block.index, 'transactions':last_block.transactions, 'previous_hash':last_block.previous_hash, 'hash':last_block.hash}
-            # test = {'index':last_block.transactions}
-            file_name = './block_data/block_' + str(last_block.index) + '.json'
-            with open(file_name, 'w') as outfile:
-                json.dump(test, outfile)
-            data = []
-            for i in last_block.transactions:
-                # data.append(i[0]['content'])
-                # data.append(hashfunc(i[0]['content']))
-                data.append(i[0]['tx_hash'])
-            tree = MerkleTree(data, defaulthash)
-            path = './block_data/merkle_' + str(last_block.index)
-            # export(tree, filename=path)
-        else:
-            Blockchain.size = 1
-            new_block = Block(index=last_block.index + 1,
-                            transactions=[self.unconfirmed_transactions],
+        for i in range(len(self.unconfirmed_transactions)):
+            if len(last_block.transactions) < 100 and not new_mined:
+                last_block.transactions.append(self.unconfirmed_transactions[i])
+                test = {'index':last_block.index, 'transactions':last_block.transactions, 'previous_hash':last_block.previous_hash, 'hash':last_block.hash}
+                file_name = './block_data/block_' + str(last_block.index) + '.json'
+                with open(file_name, 'w') as outfile:
+                    json.dump(test, outfile)
+                data = []
+                for j in last_block.transactions:
+                    data.append(j['tx_hash'])
+                tree = MerkleTree(data, defaulthash)
+                path = './block_data/merkle_' + str(last_block.index)
+            else:
+                new_mined = True
+                print('i:',i, 'unconfirme:', self.unconfirmed_transactions[i:])
+                new_block = Block(index=last_block.index + 1,
+                            transactions=self.unconfirmed_transactions[i:],
                             # timestamp=time.time(),
                             previous_hash=last_block.hash)
+                proof = self.proof_of_work(new_block)
+                self.add_block(new_block, proof)
+                Blockchain.size += 1
+                break
+        print("current:", len(last_block.transactions))
+               
+
+#         if Blockchain.size <= 2:
+#             last_block.transactions.append(self.unconfirmed_transactions)
+#             Blockchain.size += 1
+#             # test = {'index':last_block.index, 'transactions':last_block.transactions, 'timestamp':last_block.timestamp, 'previous_hash':last_block.previous_hash, 'nonce': last_block.nonce, 'hash':last_block.hash}
+#             test = {'index':last_block.index, 'transactions':last_block.transactions, 'previous_hash':last_block.previous_hash, 'hash':last_block.hash}
+#             # test = {'index':last_block.transactions}
+#             file_name = './block_data/block_' + str(last_block.index) + '.json'
+#             with open(file_name, 'w') as outfile:
+#                 json.dump(test, outfile)
+#             data = []
+#             for i in last_block.transactions:
+#                 # data.append(i[0]['content'])
+#                 # data.append(hashfunc(i[0]['content']))
+#                 data.append(i[0]['tx_hash'])
+#             tree = MerkleTree(data, defaulthash)
+#             path = './block_data/merkle_' + str(last_block.index)
+#             # export(tree, filename=path)
+#         else:
+#             Blockchain.size = 1
+#             new_block = Block(index=last_block.index + 1,
+#                             transactions=[self.unconfirmed_transactions],
+#                             # timestamp=time.time(),
+#                             previous_hash=last_block.hash)
             
 
-            proof = self.proof_of_work(new_block)
-            self.add_block(new_block, proof)
-            Blockchain.size += 1
+#             proof = self.proof_of_work(new_block)
+#             self.add_block(new_block, proof)
+#             Blockchain.size += 1
 
         self.unconfirmed_transactions = []
 
