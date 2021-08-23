@@ -58,12 +58,11 @@ As shown, `recovered_Secret` is equal to `Secret`.
 
 ## Deploy a blockchain and nodes
 
-Install the dependencies,
+Install the dependencies: install [merklelib](https://github.com/vpaliy/merklelib) if your python environment doesn't have before
 
 ```sh
 $ cd blockchain/
 $ pip install -r requirements.txt
-$ (optional: install [merklelib](https://github.com/vpaliy/merklelib) if your python environment doesn't have before, refer to node_server.py line 7)
 ```
 
 Start a blockchain, the port number is set to 8001,
