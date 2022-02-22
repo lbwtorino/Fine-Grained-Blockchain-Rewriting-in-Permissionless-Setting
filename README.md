@@ -3,7 +3,9 @@
 A construction of practical ABET scheme, in addition to a Proof-of-Work blockchain implemented.
 The ABET scheme can be used to secure blockchain rewriting, such that trapdoor holder may maliciously rewrite the blockchain without being identified.
 
-A video for demo can be found at [this](https://www.youtube.com/watch?v=RyF2fbrhK0Q&t=179s)(with subtitles) and [this](https://www.youtube.com/watch?v=W4_ugZwe7bE&t=54s)(without subtitles)
+A video for demo can be found at [this](https://www.youtube.com/watch?v=RyF2fbrhK0Q&t=179s)(with subtitles) and [this](https://www.youtube.com/watch?v=W4_ugZwe7bE&t=54s)(without subtitles).
+
+The full version of our paper can be found in the *paper/* folder.
 
 ## Prerequisites
 
